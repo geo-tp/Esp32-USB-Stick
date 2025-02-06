@@ -147,6 +147,7 @@ void setupUsbEvent() {
 void setup() {
   auto cfg = M5.config();
   M5Cardputer.begin(cfg);
+  M5Cardputer.Display.setRotation(1);
 
   // Welcome screen and wait input
   displayWelcome();
