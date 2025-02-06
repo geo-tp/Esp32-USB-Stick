@@ -8,6 +8,8 @@ This project transforms an SD card reader into a functional USB stick, the progr
 - **USB Mass Storage Device**: Enables the SD card to function as a standard USB stick.
 - **Plug and Play**: Automatically mounts the SD card when connected to a USB host.
 
+**Note:** Transfer speeds are quite low due to the limitation of the SD card reader
+
 ## Requirements
 
 - **Hardware**:
