@@ -69,10 +69,17 @@ void displayMessage(std::string message) {
 void setup_usb_callback() {
   // Write Callback
   auto onWrite = [](uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize) -> int32_t {
+    // Verify free space
+    uint64_t freeSpace = SD.totalBytes() - SD.usedBytes();
+    if (bufsize > freeSpace) {
+      return -1; // no space available
+    }
+
+    // Verify sector size
     const uint32_t secSize = SD.sectorSize();
     if (secSize == 0) return -1;  // disk error
 
-    // For each sector in the buffer
+    // For each sector in the buffer, write
     for (uint32_t x = 0; x < bufsize / secSize; ++x) {
       uint8_t blkBuffer[secSize];
       memcpy(blkBuffer, buffer + secSize * x, secSize);
@@ -85,12 +92,14 @@ void setup_usb_callback() {
 
   // Read Callback
   auto onRead = [](uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize) -> int32_t {
+    // Verify sector size
     const uint32_t secSize = SD.sectorSize();
     if (secSize == 0) return -1;  // disk error
 
+    // For each sector in the buffer, read
     for (uint32_t x = 0; x < bufsize / secSize; ++x) {
       if (!SD.readRAW(reinterpret_cast<uint8_t*>(buffer) + (x * secSize), lba + x)) {
-        return -1;
+        return -1; // disk errror
       }
     }
     return bufsize;
